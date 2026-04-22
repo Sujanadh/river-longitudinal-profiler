@@ -8,9 +8,9 @@ name = "georust_core"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.20", features = ["extension-module"] }
+pyo3 = { version = "0.23", features = ["extension-module"] }
 ndarray = "0.15"
-numpy = "0.20"
+numpy = "0.23"
 rayon = "1.8" # For parallelism
 memmap2 = "0.9" # For large DEM handling
 anyhow = "1.0"

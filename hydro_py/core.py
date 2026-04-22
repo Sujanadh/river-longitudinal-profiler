@@ -1,6 +1,7 @@
 import numpy as np
 import rasterio
 from typing import Tuple
+import georust_core
 
 class RiverProfiler:
     """
@@ -10,17 +11,15 @@ class RiverProfiler:
     def __init__(self, dem_path: str):
         self.dem_path = dem_path
         with rasterio.open(dem_path) as src:
-            self.dem = src.read(1)
+            self.dem = src.read(1).astype(np.float32)
             self.transform = src.transform
             self.crs = src.crs
 
-    def extract_network(self, accumulation_threshold: float):
+    def compute_flow_direction(self):
         """
-        Extracts the river network based on an accumulation threshold.
+        Computes flow direction using the Rust core.
         """
-        # This will call the Rust core in the future
-        print(f"Extracting network with threshold: {accumulation_threshold}")
-        pass
+        return georust_core.compute_flow_direction(self.dem)
 
     def get_profile(self, x: float, y: float) -> Tuple[np.ndarray, np.ndarray]:
         """
