@@ -26,31 +26,34 @@ if dem_file is not None:
         # Handle nodata if present
         dem_data[dem_data == src.nodata] = np.nan
         
+    # Initialize profiler
+    # Note: RiverProfiler currently takes a path, but we can pass the data
+    # For now, let's use the Rust functions directly in the UI for speed
+    import georust_core
+    
+    with st.spinner("Processing Hydrology (Rust Core)..."):
+        filled = georust_core.fill_depressions(dem_data)
+        accumulation = georust_core.compute_accumulation(filled)
+        
     with col1:
-        st.subheader("DEM Visualization")
-        # Simple heatmap for DEM
-        fig_dem = px.imshow(dem_data, color_continuous_scale='viridis', origin='lower')
-        fig_dem.update_layout(coloraxis_showscale=False, margin=dict(l=0, r=0, b=0, t=0))
-        st.plotly_chart(fig_dem, width='stretch')
+        st.subheader("River Network")
+        # Mask accumulation for network extraction
+        network = np.where(accumulation > acc_threshold, 1, 0)
+        
+        # Display accumulation (log scale for better visibility)
+        fig_acc = px.imshow(np.log10(accumulation + 1), color_continuous_scale='blues', origin='lower')
+        # Overlay network if possible or just show network
+        fig_net = px.imshow(network, color_continuous_scale='Greys', origin='lower', opacity=0.5)
+        
+        st.plotly_chart(fig_acc, width='stretch')
+        st.caption("Flow Accumulation (Log10 scale)")
         
     with col2:
-        st.subheader("River Profile (Main Stem)")
-        # For now, just show dummy data as we need full flow accumulation for profiles
-        dist = np.linspace(0, dem_data.shape[1], 100)
-        # Dummy profile following a diagonal
-        elev = np.linspace(np.nanmax(dem_data), np.nanmin(dem_data), 100)
+        st.subheader("Topography (Filled)")
+        fig_dem = px.imshow(filled, color_continuous_scale='viridis', origin='lower')
+        st.plotly_chart(fig_dem, width='stretch')
         
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=dist, y=elev, mode='lines', name='Elevation'))
-        fig.update_layout(xaxis_title="Distance (pixels)", yaxis_title="Elevation (m)")
-        st.plotly_chart(fig, width='stretch')
-
-        st.subheader("Chi Plot")
-        chi = dist * 0.5 
-        fig_chi = go.Figure()
-        fig_chi.add_trace(go.Scatter(x=chi, y=elev, mode='lines', name='Chi-Elevation'))
-        fig_chi.update_layout(xaxis_title="χ (Chi)", yaxis_title="Elevation (m)")
-        st.plotly_chart(fig_chi, width='stretch')
+        st.info("Accumulation computed. Network extraction complete.")
 else:
     with col1:
         st.subheader("Map View")

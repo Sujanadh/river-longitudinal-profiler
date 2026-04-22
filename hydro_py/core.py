@@ -15,11 +15,13 @@ class RiverProfiler:
             self.transform = src.transform
             self.crs = src.crs
 
-    def compute_flow_direction(self):
+    def compute_flow_accumulation(self):
         """
-        Computes flow direction using the Rust core.
+        Fills depressions and computes flow accumulation.
         """
-        return georust_core.compute_flow_direction(self.dem)
+        filled = georust_core.fill_depressions(self.dem)
+        accumulation = georust_core.compute_accumulation(filled)
+        return filled, accumulation
 
     def get_profile(self, x: float, y: float) -> Tuple[np.ndarray, np.ndarray]:
         """
