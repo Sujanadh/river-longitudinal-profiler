@@ -8,9 +8,9 @@ class RiverProfiler:
     Main API class for River Longitudinal Profile analysis.
     Wraps the georust_core engine.
     """
-    def __init__(self, dem_path: str):
-        self.dem_path = dem_path
-        with rasterio.open(dem_path) as src:
+    def __init__(self, dem_source):
+        self.dem_source = dem_source
+        with rasterio.open(dem_source) as src:
             self.dem = src.read(1).astype(np.float32)
             self.transform = src.transform
             self.crs = src.crs
