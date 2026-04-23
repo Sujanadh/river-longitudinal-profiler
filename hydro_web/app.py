@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import rasterio
 from io import BytesIO
-from hydro_py.core import RiverProfiler
+from hydro_py.core import RiverProfiler, chi_analysis
 import plotly.express as px
 
 st.set_page_config(page_title="River Profiler Next-Gen", layout="wide")
