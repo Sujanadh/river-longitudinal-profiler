@@ -92,16 +92,16 @@ if dem_file is not None:
                 st.plotly_chart(fig_elev, width='stretch')
                 
             with p_col2:
-                st.subheader("Chi ($\chi$) Transformation")
+                st.subheader(r"Chi ($\chi$) Transformation")
                 fig_chi = go.Figure()
-                fig_chi.add_trace(go.Scatter(x=chi, y=elev, mode='lines', name='$\chi$ Plot', line=dict(color='blue', width=3)))
+                fig_chi.add_trace(go.Scatter(x=chi, y=elev, mode='lines', name=r'$\chi$ Plot', line=dict(color='blue', width=3)))
                 if len(kp_indices) > 0:
                     fig_chi.add_trace(go.Scatter(
                         x=chi[kp_indices], y=elev[kp_indices], 
                         mode='markers', name='Knickpoints',
                         marker=dict(color='red', size=12, symbol='x')
                     ))
-                fig_chi.update_layout(xaxis_title="$\chi$", yaxis_title="Elevation (m)", height=450)
+                fig_chi.update_layout(xaxis_title=r"$\chi$", yaxis_title="Elevation (m)", height=450)
                 st.plotly_chart(fig_chi, width='stretch')
 
             st.divider()
